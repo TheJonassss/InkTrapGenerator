@@ -1,6 +1,6 @@
 # Ink Trap Generator
 
-**A Glyphs 3 filter plugin that inserts ink traps into the concave joints of any typeface.**
+**A Glyphs 3 & 4 filter plugin that inserts ink traps into the concave joints of a typeface.**
 
 Developed by [Jona Saucedo](https://nonfoundry.com) / Non Foundry.
 
@@ -18,17 +18,15 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 
 ## Features
 
-- **3 trap shapes** — Conic (V), Flat (straight bottom), Rounded (true circular arc)
-- **Automatic chamfer** — a depth of 0 produces a clean straight cut
-- **Absolute or relative depth** — fixed units, or a percentage of the master's stem so traps scale with the weight across the whole family
-- **Mouth smoothing** — round the junction with the outline, from crisp to soft
-- **Thin-stroke guardrail** — depth is capped automatically so a trap never punches through a thin stem
-- **Selection-aware** — trap every concave joint, or only the on-curve nodes you select in Edit View
-- **Non-destructive to components** — only paths are processed; composites are left intact
+- **3 trap shapes** — Conic (V), Flat, Rounded (circular arc)
+- **Automatic chamfer** — a Trap depth of 0 gives a straight cut
+- **Absolute or relative depth** — fixed units, or a percentage of the master's stem
+- **Mouth smoothing** — from crisp to soft
+- **Thin-stroke guardrail** — depth is capped to stay within the available stroke
+- **Selection-aware** — trap all concave joints, or only the nodes you select
+- **Paths only** — components are left intact
 
 ---
-
-## Examples
 
 ## Sans Serif
 ![Sans Serif](docs/images/sans.jpg)
@@ -43,6 +41,13 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 - Glyphs 3.0 or later — compatible with Glyphs 3 and 4
 - macOS 11 or later
 - The **Vanilla** module (Plugin Manager → Modules)
+
+---
+
+### Manual installation
+1. Download or clone this repository
+2. Double-click `InkTrapGenerator.glyphsFilter` to install
+3. Restart Glyphs
 
 ---
 
@@ -64,10 +69,9 @@ For consistent results across an entire typeface, calibrate in this order:
 3. **Trap width** — set the mouth opening
 4. **Min / Max angle** — narrow the range of joint openings that get trapped
 5. **Smoothing** — soften the mouth if desired
-6. Test on a representative set: `M, N, V, W, v, w, K, x` — if these look correct, the rest of the alphabet will follow
+6. Test on a representative set: `M, N, V, W, v, w, K, x` — if these look right, the rest of the alphabet usually follows
 
 > **Rule of thumb:** keep Relative depth so the same setting holds from Thin to Black; only switch to Absolute when fine-tuning a single glyph.
-
 
 ![Preview](docs/images/preview.gif)
 
@@ -120,6 +124,7 @@ Its real use is as a **noise filter**: it keeps traps out of corners built from 
 ---
 
 ## Trap shapes
+
 Conic (V) | Flat | Rounded
 
 ![Trap shapes](docs/images/shapes.jpg)
@@ -128,7 +133,7 @@ Conic (V) | Flat | Rounded
 
 ## Multiple masters
 
-Apply the filter per visible master. In **Relative** depth mode the trap depth is taken from that master's stem thickness, so every master gets traps proportional to its own weight — keeping the family visually consistent without re-tuning.
+Apply the filter per visible master. In **Relative** depth mode the trap depth is taken from that master's stem, so each master gets traps proportional to its own weight.
 
 ## Known limitations
 
