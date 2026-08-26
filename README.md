@@ -1,6 +1,6 @@
 # Ink Trap Generator
 
-**A Glyphs 3 & 4 filter plugin that inserts ink traps into the concave joints of a typeface.**
+**An ink-trap filter for Glyphs 3 & 4.**
 
 Developed by [Jona Saucedo](https://nonfoundry.com) / Non Foundry.
 
