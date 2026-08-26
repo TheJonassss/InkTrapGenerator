@@ -12,7 +12,7 @@ Developed by [Jona Saucedo](https://nonfoundry.com) / Non Foundry.
 
 Ink Trap Generator finds the concave joints of a glyph — the sharp inner corners where strokes meet, such as the crotches of `M N V W K v w x` — and carves an ink trap into each one. Detection uses the real outline tangents (straight or curved), so it works for both Sans Serif and Serif, including curved-bracket joints. Smooth (tangent-continuous) junctions, like where a bowl meets a stem, are left untouched.
 
-Each trap is built directly on the real segment: on curves the bézier is split exactly with de Casteljau, never approximated on the tangent. Geometry is computed in pure Python (no Cocoa drawing objects) and nodes are rewritten in place, so components are never altered.
+Each trap is built directly on the real segment: on curves the bézier is split with de Casteljau, so the trap follows the curved segment. Geometry is computed in pure Python (no Cocoa drawing objects) and nodes are rewritten in place; components are left unchanged.
 
 ---
 
@@ -44,7 +44,8 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 
 ---
 
-### Manual installation
+## Installation
+
 1. Download or clone this repository
 2. Double-click `InkTrapGenerator.glyphsFilter` to install
 3. Restart Glyphs
@@ -62,16 +63,16 @@ In Edit View you can select specific on-curve nodes (the joint vertices) before 
 
 ### Calibration workflow
 
-For consistent results across an entire typeface, calibrate in this order:
+To calibrate across a typeface, set the parameters in this order:
 
-1. **Depth mode** — choose Relative (% of stem) for coherent traps across weights, or Absolute for fixed units
+1. **Depth mode** — Relative (% of stem) ties depth to the master's stem; Absolute uses fixed units
 2. **Trap depth** — set how deep the trap goes
 3. **Trap width** — set the mouth opening
 4. **Min / Max angle** — narrow the range of joint openings that get trapped
 5. **Smoothing** — soften the mouth if desired
 6. Test on a representative set: `M, N, V, W, v, w, K, x` — if these look right, the rest of the alphabet usually follows
 
-> **Rule of thumb:** keep Relative depth so the same setting holds from Thin to Black; only switch to Absolute when fine-tuning a single glyph.
+> **Recommendation:** keep Relative depth so the same setting holds from Thin to Black; only switch to Absolute when fine-tuning a single glyph.
 
 ![Preview](docs/images/preview.gif)
 
