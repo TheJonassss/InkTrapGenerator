@@ -18,7 +18,6 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 
 ## Features
 
-- **Universal** — works with Sans Serif and Serif (straight and curved-bracket joints)
 - **3 trap shapes** — Conic (V), Flat (straight bottom), Rounded (true circular arc)
 - **Automatic chamfer** — a depth of 0 produces a clean straight cut
 - **Absolute or relative depth** — fixed units, or a percentage of the master's stem so traps scale with the weight across the whole family
@@ -31,10 +30,10 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 
 ## Examples
 
-### Sans Serif
+## Sans Serif
 ![Sans Serif](docs/images/sans.jpg)
 
-### Serif
+## Serif
 ![Serif](docs/images/serif.jpg)
 
 ---
@@ -44,25 +43,6 @@ Each trap is built directly on the real segment: on curves the bézier is split 
 - Glyphs 3.0 or later — compatible with Glyphs 3 and 4
 - macOS 11 or later
 - The **Vanilla** module (Plugin Manager → Modules)
-
----
-
-## Installation
-
-### Via Glyphs Plugin Manager (recommended)
-
-> *Pending approval — not yet listed in the Plugin Manager. Until then, use the manual installation below.*
-
-1. Open Glyphs
-2. Go to **Window → Plugin Manager**
-3. Search for **Ink Trap Generator**
-4. Click **Install**
-5. Restart Glyphs
-
-### Manual installation
-1. Download or clone this repository
-2. Double-click `InkTrapGenerator.glyphsFilter` to install
-3. Restart Glyphs
 
 ---
 
@@ -140,6 +120,7 @@ Its real use is as a **noise filter**: it keeps traps out of corners built from 
 ---
 
 ## Trap shapes
+Conic (V) | Flat | Rounded
 
 ![Trap shapes](docs/images/shapes.jpg)
 
