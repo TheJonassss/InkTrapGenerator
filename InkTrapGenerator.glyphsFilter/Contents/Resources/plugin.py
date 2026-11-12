@@ -6,7 +6,7 @@
 # Author:       Jona Saucedo
 # Organization: Non Foundry
 # Website:      nonfoundry.com
-# Version:      1.0.0
+# Version:      1.1.0
 # Copyright:    © 2026 Jona Saucedo / Non Foundry. All rights reserved.
 # License:      MIT License
 #
@@ -31,10 +31,11 @@
 from __future__ import division, print_function, unicode_literals
 import objc
 import math
+import json
 from GlyphsApp import Glyphs, GSNode, LINE, CURVE, OFFCURVE
 from GlyphsApp.plugins import FilterWithDialog
 from Foundation import NSPoint, NSLog
-from vanilla import Window, Group, TextBox, Slider, RadioGroup, Button
+from vanilla import Window, Group, TextBox, Slider, RadioGroup, Button, PopUpButton, EditText, HorizontalLine
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constantes
@@ -208,7 +209,7 @@ class InkTrapGenerator(FilterWithDialog):
         self.actionButtonLabel = Glyphs.localize({"en": "Apply", "es": "Aplicar"})
 
         width = 340
-        height = 302
+        height = 74 + len(SLIDER_SPECS) * 30 + 133
         self.paletteView = Window((width, height))
         self.paletteView.group = Group((0, 0, width, height))
         g = self.paletteView.group
@@ -235,6 +236,27 @@ class InkTrapGenerator(FilterWithDialog):
                                Glyphs.localize({"en": "Reset", "es": "Restablecer"}),
                                callback=self.resetCallback)
 
+        # ─────────────────────────────────────────────────────────────────
+        # Presets
+        # ─────────────────────────────────────────────────────────────────
+        py = y + 4 + 20 + 14
+        g.presetsLine = HorizontalLine((12, py, -12, 1))
+        py += 10
+        g.presetsLabel = TextBox((12, py, -12, 17),
+                                 Glyphs.localize({"en": "Presets", "es": "Preajustes"}))
+        py += 24
+        g.presetPopup = PopUpButton((12, py, 150, 20), self._presetItems(),
+                                    callback=self.presetPopupCallback)
+        g.deleteButton = Button((172, py, -12, 20),
+                                Glyphs.localize({"en": "Delete", "es": "Borrar"}),
+                                callback=self.deleteCallback)
+        py += 28
+        g.presetName = EditText((12, py, 150, 21),
+                                placeholder=Glyphs.localize({"en": "Preset name…", "es": "Nombre del preajuste…"}))
+        g.saveButton = Button((172, py, -12, 20),
+                              Glyphs.localize({"en": "Save", "es": "Guardar"}),
+                              callback=self.saveCallback)
+
         self.dialog = self.paletteView.group.getNSView()
 
     @objc.python_method
@@ -259,6 +281,7 @@ class InkTrapGenerator(FilterWithDialog):
             v = float(Glyphs.defaults[dkey(name)])
             getattr(g, "sld_" + name).set(v)
             getattr(g, "val_" + name).set(self._valLabel(name, v))
+        self._refreshPresetPopup(self._matchingPresetName())
         self.update()
 
     @objc.python_method
@@ -279,6 +302,7 @@ class InkTrapGenerator(FilterWithDialog):
             v = getattr(g, "sld_" + name).get()
             Glyphs.defaults[dkey(name)] = v
             getattr(g, "val_" + name).set(self._valLabel(name, v))
+        g.presetPopup.set(0)  # editar cualquier control -> "Custom"
         self.update()
 
     @objc.python_method
@@ -291,7 +315,125 @@ class InkTrapGenerator(FilterWithDialog):
             Glyphs.defaults[dkey(name)] = v
             getattr(g, "sld_" + name).set(v)
             getattr(g, "val_" + name).set(self._valLabel(name, v))
+        g.presetPopup.set(0)
         self.update()
+
+    # ─────────────────────────────────────────────────────────────────────
+    # Presets (persistencia en Glyphs.defaults como JSON)
+    # ─────────────────────────────────────────────────────────────────────
+    @objc.python_method
+    def _loadPresets(self):
+        raw = Glyphs.defaults[dkey("presets")]
+        if not raw:
+            return {}
+        try:
+            data = json.loads(raw)
+            return data if isinstance(data, dict) else {}
+        except (ValueError, TypeError):
+            return {}
+
+    @objc.python_method
+    def _storePresets(self, presets):
+        try:
+            Glyphs.defaults[dkey("presets")] = json.dumps(presets)
+        except (TypeError, ValueError):
+            pass
+
+    @objc.python_method
+    def _presetItems(self):
+        names = sorted(self._loadPresets().keys(), key=lambda s: s.lower())
+        return [Glyphs.localize({"en": "Custom", "es": "Personalizado"})] + names
+
+    @objc.python_method
+    def _refreshPresetPopup(self, selectName=None):
+        g = self.paletteView.group
+        items = self._presetItems()
+        g.presetPopup.setItems(items)
+        if selectName and selectName in items:
+            g.presetPopup.set(items.index(selectName))
+        else:
+            g.presetPopup.set(0)
+
+    @objc.python_method
+    def _currentValues(self):
+        vals = {
+            "trapType": int(Glyphs.defaults[dkey("trapType")] or 0),
+            "depthMode": int(Glyphs.defaults[dkey("depthMode")] or 0),
+        }
+        for name, _, _, _, _ in SLIDER_SPECS:
+            vals[name] = float(Glyphs.defaults[dkey(name)] or 0.0)
+        return vals
+
+    @objc.python_method
+    def _applyValues(self, vals):
+        g = self.paletteView.group
+        if "trapType" in vals:
+            Glyphs.defaults[dkey("trapType")] = int(vals["trapType"])
+            g.trapType.set(int(vals["trapType"]))
+        if "depthMode" in vals:
+            Glyphs.defaults[dkey("depthMode")] = int(vals["depthMode"])
+            g.depthMode.set(int(vals["depthMode"]))
+        for name, _, _, _, _ in SLIDER_SPECS:
+            if name in vals:
+                v = float(vals[name])
+                Glyphs.defaults[dkey(name)] = v
+                getattr(g, "sld_" + name).set(v)
+                getattr(g, "val_" + name).set(self._valLabel(name, v))
+        self.update()
+
+    @objc.python_method
+    def _valuesEqual(self, a, b):
+        for k in ("trapType", "depthMode"):
+            if a.get(k) is None or b.get(k) is None or int(a[k]) != int(b[k]):
+                return False
+        for name, _, _, _, _ in SLIDER_SPECS:
+            av, bv = a.get(name), b.get(name)
+            if av is None or bv is None or abs(float(av) - float(bv)) > 1e-6:
+                return False
+        return True
+
+    @objc.python_method
+    def _matchingPresetName(self):
+        cur = self._currentValues()
+        for nm, vals in self._loadPresets().items():
+            if self._valuesEqual(cur, vals):
+                return nm
+        return None
+
+    @objc.python_method
+    def presetPopupCallback(self, sender):
+        idx = sender.get()
+        if idx <= 0:
+            return
+        name = sender.getItems()[idx]
+        presets = self._loadPresets()
+        if name in presets:
+            self._applyValues(presets[name])
+
+    @objc.python_method
+    def saveCallback(self, sender):
+        g = self.paletteView.group
+        name = (g.presetName.get() or "").strip()
+        if not name:
+            return
+        presets = self._loadPresets()
+        presets[name] = self._currentValues()
+        self._storePresets(presets)
+        g.presetName.set("")
+        self._refreshPresetPopup(name)
+
+    @objc.python_method
+    def deleteCallback(self, sender):
+        g = self.paletteView.group
+        idx = g.presetPopup.get()
+        if idx <= 0:
+            return
+        name = g.presetPopup.getItems()[idx]
+        presets = self._loadPresets()
+        if name in presets:
+            del presets[name]
+            self._storePresets(presets)
+        self._refreshPresetPopup()
 
     @objc.python_method
     def _num(self, key, fallback):
