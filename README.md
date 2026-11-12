@@ -132,6 +132,10 @@ Conic (V) | Flat | Rounded
 
 ---
 
+## Presets
+
+Save a custom preset. 
+ 
 ## Multiple masters
 
 Apply the filter per visible master. In **Relative** depth mode the trap depth is taken from that master's stem, so each master gets traps proportional to its own weight.
