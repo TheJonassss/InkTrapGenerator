@@ -132,6 +132,10 @@ Conic (V) | Flat | Rounded
 
 ---
 
+## Presets
+
+Presets store a full set of options (trap shape, depth mode, and all the sliders) under a name, so you can reuse the same setup across glyphs or projects. Type a name and click Save; the preset is added to the pop-up and stays available the next time you open the filter. Pick a preset from the pop-up to load its values, or select one and click Delete to remove it.
+
 ## Multiple masters
 
 Apply the filter per visible master. In **Relative** depth mode the trap depth is taken from that master's stem, so each master gets traps proportional to its own weight.
@@ -157,3 +161,11 @@ See [LICENSE](LICENSE) for full terms.
 **Non Foundry** is an independent type design studio by Jona Saucedo.
 
 Website: [nonfoundry.com](https://nonfoundry.com)
+
+## Changelog
+
+v1.1.0
+
+- Presets: save a full set of options under a name, then load or delete them from the pop-up.
+
+Compatible with Glyphs 3 and 4.
